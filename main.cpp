@@ -14,11 +14,6 @@
 
 using namespace std;
 
-bool distanceComparison(tuple<int, double> v1, tuple<int, double> v2)
-{
-    return get<1>(v1) < get<1>(v2);
-}
-
 int* KNN(ArffData* dataset)
 {
     // predictions is the array where you have to return the class predicted (integer) for the dataset instances
@@ -75,22 +70,23 @@ int* KNN(ArffData* dataset)
             outputValues[j] = dataset->get_instance(neighbors[j])->get(dataset->num_attributes() - 1)->operator int32();
         }
 
-        // maxCount()
+        // mode()
         map<int, int> histogram;
 
         int mode_count = 0;
-        for (int i = 0; i < k; i++) {
-            int element = outputValues[i];
+        int mode = -1;
+        for(int a = 0; a < k; a++) 
+        {
+            int element = outputValues[a];
             histogram[element]++;
-            mode_count = max(mode_count, histogram[element]);
-        }
-
-        for (auto element : histogram) {
-            if (element.second == mode_count) {
-                predictions[i] = element.first;
-                break;
+            if(histogram[element] > mode_count)
+            {
+                mode_count = histogram[element];
+                mode = element;
             }
         }
+
+        predictions[i] = mode;
     }
     
     return predictions;
