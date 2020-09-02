@@ -8,8 +8,8 @@
 #include "libarff/arff_data.h"
 
 // -----------
-#include <climits>
-#include <bits/stdc++.h>
+#include <climits>         // for MAX_INT
+#include <bits/stdc++.h>   // for sorting
 // -----------
 
 using namespace std;
@@ -30,7 +30,7 @@ int* KNN(ArffData* dataset)
     
     // Implement the KNN here, fill the predictions array
 
-    int k = 5; // number of neighbors to use for prediction
+    int k = 3; // number of neighbors to use for prediction
 
     for(int i = 0; i < dataset->num_instances(); i++)
     {
@@ -48,18 +48,13 @@ int* KNN(ArffData* dataset)
                 continue;
             }
 
-            distances[j] = tuple<int, double>(
-                j, 
-                sqrt(
-                    pow(dataset->get_instance(i)->get(0)->operator float() - dataset->get_instance(j)->get(0)->operator float(),  2) +
-                    pow(dataset->get_instance(i)->get(1)->operator float() - dataset->get_instance(j)->get(1)->operator float(),  2) +
-                    pow(dataset->get_instance(i)->get(2)->operator float() - dataset->get_instance(j)->get(2)->operator float(),  2) +
-                    pow(dataset->get_instance(i)->get(3)->operator float() - dataset->get_instance(j)->get(3)->operator float(),  2) +
-                    pow(dataset->get_instance(i)->get(4)->operator float() - dataset->get_instance(j)->get(4)->operator float(),  2) +
-                    pow(dataset->get_instance(i)->get(5)->operator float() - dataset->get_instance(j)->get(5)->operator float(),  2) +
-                    pow(dataset->get_instance(i)->get(6)->operator float() - dataset->get_instance(j)->get(6)->operator float(),  2) 
-                )
-            );
+            long squaredSum = 0;
+            for(int y = 0; y < dataset->num_attributes() - 1; y++)
+            {
+                squaredSum += pow(dataset->get_instance(i)->get(y)->operator float() - dataset->get_instance(j)->get(y)->operator float(),  2);
+            }
+
+            distances[j] = tuple<int, double>(j, sqrt(squaredSum));
         }
 
         // distances.sort()
