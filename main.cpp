@@ -63,7 +63,9 @@ int* KNN(ArffData* dataset)
         }
 
         // distances.sort()
-        std::sort(distances, distances + dataset->num_instances(), distanceComparison);
+        sort(distances, distances + dataset->num_instances(), [](tuple<int, double> a, tuple<int, double> b) {
+            return get<1>(a) < get<1>(b);
+        });
 
         // distances.take(5)
         for(int x = 0; x < k; x++)
