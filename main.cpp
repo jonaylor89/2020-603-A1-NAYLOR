@@ -7,7 +7,17 @@
 #include "libarff/arff_parser.h"
 #include "libarff/arff_data.h"
 
+// -----------
+#include <climits>
+#include <bits/stdc++.h>
+// -----------
+
 using namespace std;
+
+bool distanceComparison(tuple<int, double> v1, tuple<int, double> v2)
+{
+    return get<1>(v1) < get<1>(v2);
+}
 
 int* KNN(ArffData* dataset)
 {
@@ -20,7 +30,74 @@ int* KNN(ArffData* dataset)
     
     // Implement the KNN here, fill the predictions array
 
-    
+    int k = 5; // number of neighbors to use for prediction
+
+    for(int i = 0; i < dataset->num_instances(); i++)
+    {
+
+        // getNeighbors()
+        int neighbors[5];
+        tuple<int, double>* distances = (tuple<int, double>*)malloc(dataset->num_instances() * sizeof(tuple<int, double>));
+        for(int j = 0; j < dataset->num_instances(); j++)
+        {
+
+            // map(dataset, (train) => (train, distance(train)))
+            if(j == i)
+            {
+                distances[j] = tuple<int, double>(j, INT_MAX);
+                continue;
+            }
+
+            distances[j] = tuple<int, double>(
+                j, 
+                sqrt(
+                    pow(dataset->get_instance(i)->get(0)->operator float() - dataset->get_instance(j)->get(0)->operator float(),  2) +
+                    pow(dataset->get_instance(i)->get(1)->operator float() - dataset->get_instance(j)->get(1)->operator float(),  2) +
+                    pow(dataset->get_instance(i)->get(2)->operator float() - dataset->get_instance(j)->get(2)->operator float(),  2) +
+                    pow(dataset->get_instance(i)->get(3)->operator float() - dataset->get_instance(j)->get(3)->operator float(),  2) +
+                    pow(dataset->get_instance(i)->get(4)->operator float() - dataset->get_instance(j)->get(4)->operator float(),  2) +
+                    pow(dataset->get_instance(i)->get(5)->operator float() - dataset->get_instance(j)->get(5)->operator float(),  2) +
+                    pow(dataset->get_instance(i)->get(6)->operator float() - dataset->get_instance(j)->get(6)->operator float(),  2) 
+                )
+            );
+        }
+
+        // distances.sort()
+        std::sort(distances, distances + dataset->num_instances(), distanceComparison);
+
+        // distances.take(5)
+        for(int x = 0; x < k; x++)
+        {
+            neighbors[x] = get<0>(distances[x]);
+        }
+
+        // map(neighbors, (x) => neighbors.class)
+        int outputValues[k];
+        for(int j = 0; j < k; j++)
+        {
+            outputValues[j] = dataset->get_instance(neighbors[j])->get(dataset->num_attributes() - 1)->operator int32();
+        }
+
+        // maxCount()
+        int freqFalse = 0;
+        int freqTrue = 0;
+        for (int i = 0; i < k; i++) 
+        { 
+            if (outputValues[i] == 0) 
+            {
+                freqFalse++;
+            }
+            else if (outputValues[i] == 1) 
+            {
+                freqTrue++;
+            }
+        }
+
+        int result = (freqFalse > freqTrue ? 0 : 1);
+
+        predictions[i] = result;
+
+    }
     
     return predictions;
 }
