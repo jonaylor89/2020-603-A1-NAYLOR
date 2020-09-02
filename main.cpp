@@ -76,24 +76,21 @@ int* KNN(ArffData* dataset)
         }
 
         // maxCount()
-        int freqFalse = 0;
-        int freqTrue = 0;
-        for (int i = 0; i < k; i++) 
-        { 
-            if (outputValues[i] == 0) 
-            {
-                freqFalse++;
-            }
-            else if (outputValues[i] == 1) 
-            {
-                freqTrue++;
-            }
+        map<int, int> histogram;
+
+        int mode_count = 0;
+        for (int i = 0; i < k; i++) {
+            int element = outputValues[i];
+            histogram[element]++;
+            mode_count = max(mode_count, histogram[element]);
         }
 
-        int result = (freqFalse > freqTrue ? 0 : 1);
-
-        predictions[i] = result;
-
+        for (auto element : histogram) {
+            if (element.second == mode_count) {
+                predictions[i] = element.first;
+                break;
+            }
+        }
     }
     
     return predictions;
