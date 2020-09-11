@@ -94,7 +94,7 @@ int* KNN(ArffData* dataset)
     return predictions;
 }
 
-int* MPI_KNN(ArffData* dataset, int argc, char** argv)
+int* MPI_KNN(ArffData* dataset)
 {
 
     MPI_Request reqs[dataset->num_instances()];
@@ -230,26 +230,33 @@ int main(int argc, char *argv[])
     
     MPI_Init(&argc, &argv);
 
+    int rank, size;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
+
     // Open the dataset
     ArffParser parser(argv[1]);
     ArffData *dataset = parser.parse();
     struct timespec start, end;
 
-/*
-    clock_gettime(CLOCK_MONOTONIC_RAW, &start);
+    if(rank == 0)
+    {
+        clock_gettime(CLOCK_MONOTONIC_RAW, &start);
     
-    // Get the class predictions
-    int* predictions = KNN(dataset);
-    // Compute the confusion matrix
-    int* confusionMatrix = computeConfusionMatrix(predictions, dataset);
-    // Calculate the accuracy
-    float accuracy = computeAccuracy(confusionMatrix, dataset);
-    
-    clock_gettime(CLOCK_MONOTONIC_RAW, &end);
-    uint64_t diff = (1000000000L * (end.tv_sec - start.tv_sec) + end.tv_nsec - start.tv_nsec) / 1e6;
+        // Get the class predictions
+        int* predictions = KNN(dataset);
+        // Compute the confusion matrix
+        int* confusionMatrix = computeConfusionMatrix(predictions, dataset);
+        // Calculate the accuracy
+        float accuracy = computeAccuracy(confusionMatrix, dataset);
+        
+        clock_gettime(CLOCK_MONOTONIC_RAW, &end);
+        uint64_t diff = (1000000000L * (end.tv_sec - start.tv_sec) + end.tv_nsec - start.tv_nsec) / 1e6;
 
-    printf("The KNN classifier for %lu instances required %llu ms CPU time, accuracy was %.4f\n", dataset->num_instances(), (long long unsigned int) diff, accuracy);
-    */
+        printf("The KNN classifier for %lu instances required %llu ms CPU time, accuracy was %.4f\n", dataset->num_instances(), (long long unsigned int) diff, accuracy);
+    }
+
+    MPI_Barrier(MPI_COMM_WORLD);
     // ----------------------------- MPI -------------------------
 
     clock_gettime(CLOCK_MONOTONIC_RAW, &start);
