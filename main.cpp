@@ -114,6 +114,7 @@ int* MPI_KNN(ArffData* dataset)
             MPI_Irecv(&predictions[i], 1, MPI_INT, MPI_ANY_SOURCE, i, MPI_COMM_WORLD, &reqs[i]);
         }
 
+        MPI_Waitall(dataset->num_instances(), reqs, stats);
     }
     else 
     {
@@ -189,7 +190,7 @@ int* MPI_KNN(ArffData* dataset)
 
     }
 
-    MPI_Waitall(dataset->num_instances(), reqs, stats);
+    MPI_Barrier(MPI_COMM_WORLD);
     return predictions;
 }
 
