@@ -117,6 +117,7 @@ int* MPI_KNN(ArffData* dataset, int argc, char** argv)
         }
 
         MPI_Waitall(dataset->num_instances(), reqs, stats);
+        MPI_Finalize();
         return predictions;
     }
     else 
