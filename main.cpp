@@ -111,6 +111,8 @@ int* MPI_KNN(ArffData* dataset, int argc, char** argv)
     if(rank == 0)
     {
 
+        cout << "We're working with: " << dataset->num_instances() << endl;
+
         for(int i = 0; i < dataset->num_instances(); i++)
         {
             MPI_Irecv(&predictions[i], 1, MPI_INT, MPI_ANY_SOURCE, i, MPI_COMM_WORLD, &reqs[i]);
