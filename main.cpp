@@ -103,11 +103,6 @@ int* MPI_KNN(ArffData* dataset, int argc, char** argv)
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
 
-    if(size == 1)
-    {
-        return KNN(dataset);
-    }
-
     int* predictions = (int*)malloc(dataset->num_instances() * sizeof(int));
     if(rank == 0)
     {
@@ -234,7 +229,7 @@ int main(int argc, char *argv[])
     ArffParser parser(argv[1]);
     ArffData *dataset = parser.parse();
     struct timespec start, end;
-    
+    /*
     clock_gettime(CLOCK_MONOTONIC_RAW, &start);
     
     // Get the class predictions
@@ -248,7 +243,7 @@ int main(int argc, char *argv[])
     uint64_t diff = (1000000000L * (end.tv_sec - start.tv_sec) + end.tv_nsec - start.tv_nsec) / 1e6;
 
     printf("The KNN classifier for %lu instances required %llu ms CPU time, accuracy was %.4f\n", dataset->num_instances(), (long long unsigned int) diff, accuracy);
-
+*/
     // ----------------------------- MPI -------------------------
 
     clock_gettime(CLOCK_MONOTONIC_RAW, &start);
@@ -257,9 +252,9 @@ int main(int argc, char *argv[])
     int* predictionsMP = MPI_KNN(dataset, argc, argv);
 
     // Compute the confusion matrix
-    int* confusionMatrixMP = computeConfusionMatrix(predictions, dataset);
+    int* confusionMatrixMP = computeConfusionMatrix(predictionsMP, dataset);
     // Calculate the accuracy
-    float accuracyMP = computeAccuracy(confusionMatrix, dataset);
+    float accuracyMP = computeAccuracy(confusionMatrixMP, dataset);
     
     clock_gettime(CLOCK_MONOTONIC_RAW, &end);
     uint64_t diffMP = (1000000000L * (end.tv_sec - start.tv_sec) + end.tv_nsec - start.tv_nsec) / 1e6;
