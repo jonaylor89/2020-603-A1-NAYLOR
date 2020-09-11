@@ -186,6 +186,7 @@ int* MPI_KNN(ArffData* dataset, int argc, char** argv)
             free(distances);
         }
 
+        MPI_Finalize();
     }
 
     MPI_Finalize();
