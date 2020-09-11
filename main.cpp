@@ -113,6 +113,8 @@ int* MPI_KNN(ArffData* dataset, int argc, char** argv)
         {
             MPI_Irecv(&predictions[i], 1, MPI_INT, MPI_ANY_SOURCE, i, MPI_COMM_WORLD, &req[i]);
         }
+
+        MPI_Waitall();
     }
     else 
     {
@@ -185,8 +187,6 @@ int* MPI_KNN(ArffData* dataset, int argc, char** argv)
             MPI_Send(&mode, 1, MPI_INT, 0, i, MPI_COMM_WORLD); // predictions[i] = mode
             free(distances);
         }
-
-        MPI_Finalize();
     }
 
     MPI_Finalize();
