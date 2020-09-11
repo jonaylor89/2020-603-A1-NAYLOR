@@ -100,8 +100,6 @@ int* MPI_KNN(ArffData* dataset, int argc, char** argv)
     MPI_Request reqs[dataset->num_instances()];
     MPI_Status stats[dataset->num_instances()];
 
-    MPI_Init(&argc, &argv);
-
     int rank, size;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
@@ -122,7 +120,7 @@ int* MPI_KNN(ArffData* dataset, int argc, char** argv)
     }
     else 
     {
-        int k = 5; // number of neighbors to use for prediction
+        int k = 1; // number of neighbors to use for prediction
 
         int lowerBound = (rank - 1) * portion;
         int upperBound = (rank * portion) - 1 > dataset->num_instances() ? dataset->num_instances() - 1: (rank * portion) - 1; // min()
@@ -231,6 +229,8 @@ int main(int argc, char *argv[])
         exit(0);
     }
     
+    MPI_Init(&argc, &argv);
+
     // Open the dataset
     ArffParser parser(argv[1]);
     ArffData *dataset = parser.parse();
@@ -267,4 +267,6 @@ int main(int argc, char *argv[])
     uint64_t diffMP = (1000000000L * (end.tv_sec - start.tv_sec) + end.tv_nsec - start.tv_nsec) / 1e6;
   
     printf("The KNN classifier with MPI for %lu instances required %llu ms CPU time, accuracy was %.4f\n", dataset->num_instances(), (long long unsigned int) diffMP, accuracyMP);
+
+    MPI_Finalize();
 }
