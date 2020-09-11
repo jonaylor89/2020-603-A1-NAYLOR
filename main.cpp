@@ -114,9 +114,7 @@ int* MPI_KNN(ArffData* dataset)
             MPI_Irecv(&predictions[i], 1, MPI_INT, MPI_ANY_SOURCE, i, MPI_COMM_WORLD, &reqs[i]);
         }
 
-        cout << "This is" << endl;
         MPI_Waitall(dataset->num_instances(), reqs, stats);
-        cout << "so dumb" << endl;
     }
     else 
     {
@@ -125,7 +123,7 @@ int* MPI_KNN(ArffData* dataset)
         int lowerBound = (rank - 1) * portion;
         int upperBound = (rank * portion) - 1 > dataset->num_instances() ? dataset->num_instances() - 1: (rank * portion) - 1; // min()
 
-
+        int count = 0; // [DEBUG]
         for(int i = lowerBound; i <= upperBound; i++)
         {
 
@@ -186,13 +184,14 @@ int* MPI_KNN(ArffData* dataset)
             }
 
 
+            count++;
             MPI_Send(&mode, 1, MPI_INT, 0, i, MPI_COMM_WORLD); // predictions[i] = mode
             free(distances);
         }
 
     }
 
-    cout << rank << " of " << size-1 << endl;
+    cout << rank << " of " << size-1 << " with " << upperBound - lowerBound << ":" << count << endl;
     MPI_Barrier(MPI_COMM_WORLD);
     return predictions;
 }
@@ -281,5 +280,6 @@ int main(int argc, char *argv[])
         printf("The KNN classifier with MPI for %lu instances required %llu ms CPU time, accuracy was %.4f\n", dataset->num_instances(), (long long unsigned int) diffMP, accuracyMP);
     }
 
+    MPI_Barrier(MPI_COMM_WORLD);
     MPI_Finalize();
 }
