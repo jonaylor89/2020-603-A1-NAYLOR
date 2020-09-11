@@ -97,6 +97,8 @@ int* KNN(ArffData* dataset)
 int* MPI_KNN(ArffData* dataset, int argc, char** argv)
 {
 
+    MPI_Request req[dataset->num_instances()];
+
     MPI_Init(&argc, &argv);
 
     int rank, size;
@@ -109,7 +111,7 @@ int* MPI_KNN(ArffData* dataset, int argc, char** argv)
 
         for(int i = 0; i < dataset->num_instances(); i++)
         {
-            MPI_Irecv(&predictions[i], 1, MPI_INT, MPI_ANY_SOURCE, i, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+            MPI_Irecv(&predictions[i], 1, MPI_INT, MPI_ANY_SOURCE, i, MPI_COMM_WORLD, &req[i]);
         }
     }
     else 
@@ -118,7 +120,7 @@ int* MPI_KNN(ArffData* dataset, int argc, char** argv)
 
         int portion = ceil(dataset->num_instances() / (size - 1));
         int lowerBound = (rank - 1) * portion;
-        int upperBound = min((rank * portion) - 1, dataset->num_instances());
+        int upperBound = (rank * portion) - 1 > dataset->num_instances() ? (rank * portion) - 1 : dataset->num_instances(); // min()
 
         for(int i = lowerBound; i < upperBound; i++)
         {
