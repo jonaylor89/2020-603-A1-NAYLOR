@@ -231,7 +231,7 @@ int main(int argc, char *argv[])
     ArffParser parser(argv[1]);
     ArffData *dataset = parser.parse();
     struct timespec start, end;
-    /*
+
     clock_gettime(CLOCK_MONOTONIC_RAW, &start);
     
     // Get the class predictions
@@ -245,7 +245,6 @@ int main(int argc, char *argv[])
     uint64_t diff = (1000000000L * (end.tv_sec - start.tv_sec) + end.tv_nsec - start.tv_nsec) / 1e6;
 
     printf("The KNN classifier for %lu instances required %llu ms CPU time, accuracy was %.4f\n", dataset->num_instances(), (long long unsigned int) diff, accuracy);
-*/
     // ----------------------------- MPI -------------------------
 
     clock_gettime(CLOCK_MONOTONIC_RAW, &start);
