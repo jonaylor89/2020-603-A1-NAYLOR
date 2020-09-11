@@ -97,32 +97,37 @@ int* KNN(ArffData* dataset)
 int* MPI_KNN(ArffData* dataset, int argc, char** argv)
 {
 
-    MPI_Request reqs[dataset->num_instances()];
-    MPI_Status stats[dataset->num_instances()];
-
     MPI_Init(&argc, &argv);
 
     int rank, size;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
 
+    // MPI_Request reqs[dataset->num_instances()];
+    MPI_Request reqs[size];
+    // MPI_Status stats[dataset->num_instances()];
+    MPI_Status stats[size];
+
     int* predictions = (int*)malloc(dataset->num_instances() * sizeof(int));
     int portion = ceil(dataset->num_instances() / (size - 1));
     if(rank == 0)
     {
 
-        for(int i = 0; i < dataset->num_instances(); i++)
+        for(int i = 0; i < size; i++)
         {
-            MPI_Irecv(&predictions[i], 1, MPI_INT, MPI_ANY_SOURCE, i, MPI_COMM_WORLD, &reqs[i]);
+            int placement = (i - 1) * portion;
+            MPI_Irecv(&predictions[placement], portion, MPI_INT, MPI_ANY_SOURCE, i, MPI_COMM_WORLD, &reqs[i]);
         }
 
-        MPI_Waitall(dataset->num_instances(), reqs, stats);
+        MPI_Waitall(size - 1, reqs, stats);
         MPI_Finalize();
         return predictions;
     }
     else 
     {
         int k = 5; // number of neighbors to use for prediction
+
+        int packet[portion];
 
         int lowerBound = (rank - 1) * portion;
         int upperBound = (rank * portion) - 1 > dataset->num_instances() ? (rank * portion) - 1 : dataset->num_instances(); // min()
@@ -186,10 +191,12 @@ int* MPI_KNN(ArffData* dataset, int argc, char** argv)
                 }
             }
 
-
-            MPI_Send(&mode, 1, MPI_INT, 0, i, MPI_COMM_WORLD); // predictions[i] = mode
+            // MPI_Send(&mode, 1, MPI_INT, 0, i, MPI_COMM_WORLD); // predictions[i] = mode
+            packet[i - lowerBound] = mode;
             free(distances);
         }
+
+        MPI_Send(packet, portion, MPI_INT, 0, rank, MPI_COMM_WORLD);
     }
 
     MPI_Finalize();
