@@ -114,7 +114,9 @@ int* MPI_KNN(ArffData* dataset)
             MPI_Irecv(&predictions[i], 1, MPI_INT, MPI_ANY_SOURCE, i, MPI_COMM_WORLD, &reqs[i]);
         }
 
+        cout << "This is" << endl;
         MPI_Waitall(dataset->num_instances(), reqs, stats);
+        cout << "so dumb" << endl;
     }
     else 
     {
@@ -190,7 +192,7 @@ int* MPI_KNN(ArffData* dataset)
 
     }
 
-    cout << rank << " of " << size << endl;
+    cout << rank << " of " << size-1 << endl;
     MPI_Barrier(MPI_COMM_WORLD);
     return predictions;
 }
