@@ -97,8 +97,8 @@ int* KNN(ArffData* dataset)
 int* MPI_KNN(ArffData* dataset, int argc, char** argv)
 {
 
-    MPI_Request reqs[dataset->num_instances() - 1];
-    MPI_Status stats[dataset->num_instances() - 1];
+    MPI_Request reqs[dataset->num_instances()];
+    MPI_Status stats[dataset->num_instances()];
 
     MPI_Init(&argc, &argv);
 
@@ -117,6 +117,7 @@ int* MPI_KNN(ArffData* dataset, int argc, char** argv)
         }
 
         MPI_Waitall(dataset->num_instances(), reqs, stats);
+        cout << "All producers finished" << endl;
         MPI_Finalize(); 
         return predictions;
     }
