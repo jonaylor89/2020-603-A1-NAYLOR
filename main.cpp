@@ -264,15 +264,18 @@ int main(int argc, char *argv[])
     // Get the class predictions
     int* predictionsMP = MPI_KNN(dataset);
 
-    // Compute the confusion matrix
-    int* confusionMatrixMP = computeConfusionMatrix(predictionsMP, dataset);
-    // Calculate the accuracy
-    float accuracyMP = computeAccuracy(confusionMatrixMP, dataset);
+    if(rank == 0)
+    {
+        // Compute the confusion matrix
+        int* confusionMatrixMP = computeConfusionMatrix(predictionsMP, dataset);
+        // Calculate the accuracy
+        float accuracyMP = computeAccuracy(confusionMatrixMP, dataset);
     
-    clock_gettime(CLOCK_MONOTONIC_RAW, &end);
-    uint64_t diffMP = (1000000000L * (end.tv_sec - start.tv_sec) + end.tv_nsec - start.tv_nsec) / 1e6;
+        clock_gettime(CLOCK_MONOTONIC_RAW, &end);
+        uint64_t diffMP = (1000000000L * (end.tv_sec - start.tv_sec) + end.tv_nsec - start.tv_nsec) / 1e6;
   
-    printf("The KNN classifier with MPI for %lu instances required %llu ms CPU time, accuracy was %.4f\n", dataset->num_instances(), (long long unsigned int) diffMP, accuracyMP);
+        printf("The KNN classifier with MPI for %lu instances required %llu ms CPU time, accuracy was %.4f\n", dataset->num_instances(), (long long unsigned int) diffMP, accuracyMP);
+    }
 
     MPI_Finalize();
 }
