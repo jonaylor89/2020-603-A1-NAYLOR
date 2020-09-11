@@ -107,6 +107,7 @@ int* MPI_KNN(ArffData* dataset, int argc, char** argv)
     MPI_Comm_size(MPI_COMM_WORLD, &size);
 
     int* predictions = (int*)malloc(dataset->num_instances() * sizeof(int));
+    int portion = ceil(dataset->num_instances() / (size - 1));
     if(rank == 0)
     {
 
@@ -121,7 +122,6 @@ int* MPI_KNN(ArffData* dataset, int argc, char** argv)
     {
         int k = 5; // number of neighbors to use for prediction
 
-        int portion = ceil(dataset->num_instances() / (size - 1));
         int lowerBound = (rank - 1) * portion;
         int upperBound = (rank * portion) - 1 > dataset->num_instances() ? (rank * portion) - 1 : dataset->num_instances(); // min()
 
@@ -234,6 +234,7 @@ int main(int argc, char *argv[])
     ArffData *dataset = parser.parse();
     struct timespec start, end;
 
+/*
     clock_gettime(CLOCK_MONOTONIC_RAW, &start);
     
     // Get the class predictions
@@ -247,6 +248,7 @@ int main(int argc, char *argv[])
     uint64_t diff = (1000000000L * (end.tv_sec - start.tv_sec) + end.tv_nsec - start.tv_nsec) / 1e6;
 
     printf("The KNN classifier for %lu instances required %llu ms CPU time, accuracy was %.4f\n", dataset->num_instances(), (long long unsigned int) diff, accuracy);
+    */
     // ----------------------------- MPI -------------------------
 
     clock_gettime(CLOCK_MONOTONIC_RAW, &start);
