@@ -97,7 +97,8 @@ int* KNN(ArffData* dataset)
 int* MPI_KNN(ArffData* dataset, int argc, char** argv)
 {
 
-    MPI_Request req[dataset->num_instances()];
+    MPI_Request reqs[dataset->num_instances()];
+    MPI_Status stats[dataset->num_instances()];
 
     MPI_Init(&argc, &argv);
 
@@ -111,10 +112,10 @@ int* MPI_KNN(ArffData* dataset, int argc, char** argv)
 
         for(int i = 0; i < dataset->num_instances(); i++)
         {
-            MPI_Irecv(&predictions[i], 1, MPI_INT, MPI_ANY_SOURCE, i, MPI_COMM_WORLD, &req[i]);
+            MPI_Irecv(&predictions[i], 1, MPI_INT, MPI_ANY_SOURCE, i, MPI_COMM_WORLD, &reqs[i]);
         }
 
-        MPI_Waitall();
+        MPI_Waitall(dataset->num_instances(), reqs, stats);
     }
     else 
     {
