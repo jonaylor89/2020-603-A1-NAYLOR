@@ -190,6 +190,7 @@ int* MPI_KNN(ArffData* dataset)
 
     }
 
+    cout << rank << " of " << size << endl;
     MPI_Barrier(MPI_COMM_WORLD);
     return predictions;
 }
