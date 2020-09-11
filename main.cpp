@@ -192,7 +192,7 @@ int* MPI_KNN(ArffData* dataset, int argc, char** argv)
             free(distances);
         }
 
-        cout << rank << endl;
+        cout << rank << " of " << size << endl;
         MPI_Finalize();
     }
 }
