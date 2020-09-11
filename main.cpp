@@ -116,8 +116,7 @@ int* MPI_KNN(ArffData* dataset, int argc, char** argv)
             MPI_Irecv(&predictions[i], 1, MPI_INT, MPI_ANY_SOURCE, i, MPI_COMM_WORLD, &reqs[i]);
         }
 
-        // MPI_Waitall(dataset->num_instances(), reqs, stats);
-        MPI_Waitall(9, reqs, stats);
+        MPI_Waitall(dataset->num_instances(), reqs, stats);
         cout << "All producers finished" << endl;
         MPI_Finalize(); 
         return predictions;
@@ -194,7 +193,7 @@ int* MPI_KNN(ArffData* dataset, int argc, char** argv)
             free(distances);
         }
 
-        cout << rank << " of " << size << endl;
+        cout << rank << " of " << size << " with portion " << lowerBound << "/" << upperBound << endl;
         MPI_Finalize();
     }
 }
