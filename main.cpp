@@ -188,10 +188,9 @@ int* MPI_KNN(ArffData* dataset)
             MPI_Send(&mode, 1, MPI_INT, 0, i, MPI_COMM_WORLD); // predictions[i] = mode
             free(distances);
         }
-
+        cout << rank << " of " << size-1 << " with " << upperBound - lowerBound << ":" << count << endl;
     }
 
-    cout << rank << " of " << size-1 << " with " << upperBound - lowerBound << ":" << count << endl;
     MPI_Barrier(MPI_COMM_WORLD);
     return predictions;
 }
