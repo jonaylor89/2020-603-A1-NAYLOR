@@ -262,7 +262,7 @@ int main(int argc, char *argv[])
     clock_gettime(CLOCK_MONOTONIC_RAW, &start);
     
     // Get the class predictions
-    int* predictionsMP = MPI_KNN(dataset, argc, argv);
+    int* predictionsMP = MPI_KNN(dataset);
 
     // Compute the confusion matrix
     int* confusionMatrixMP = computeConfusionMatrix(predictionsMP, dataset);
