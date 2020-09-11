@@ -107,7 +107,7 @@ int* MPI_KNN(ArffData* dataset, int argc, char** argv)
     MPI_Comm_size(MPI_COMM_WORLD, &size);
 
     int* predictions = (int*)malloc(dataset->num_instances() * sizeof(int));
-    int portion = ceil(dataset->num_instances() / (size - 1));
+    int portion = ceil(dataset->num_instances() / (size - 2));
     if(rank == 0)
     {
 
