@@ -125,7 +125,8 @@ int* MPI_KNN(ArffData* dataset, int argc, char** argv)
         int k = 5; // number of neighbors to use for prediction
 
         int lowerBound = (rank - 1) * portion;
-        int upperBound = (rank * portion) - 1 < dataset->num_instances() ? (rank * portion) - 1 : dataset->num_instances(); // min()
+        int upperBound = (rank * portion) - 1 <= dataset->num_instances() ? (rank * portion) - 1 : dataset->num_instances(); // min()
+
 
         for(int i = lowerBound; i < upperBound; i++)
         {
@@ -190,6 +191,7 @@ int* MPI_KNN(ArffData* dataset, int argc, char** argv)
             MPI_Send(&mode, 1, MPI_INT, 0, i, MPI_COMM_WORLD); // predictions[i] = mode
             free(distances);
         }
+
         MPI_Finalize();
     }
 }
