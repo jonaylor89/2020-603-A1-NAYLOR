@@ -97,8 +97,8 @@ int* KNN(ArffData* dataset)
 int* MPI_KNN(ArffData* dataset, int argc, char** argv)
 {
 
-    MPI_Request reqs[dataset->num_instances()];
-    MPI_Status stats[dataset->num_instances()];
+    MPI_Request reqs[dataset->num_instances() - 1];
+    MPI_Status stats[dataset->num_instances() - 1];
 
     MPI_Init(&argc, &argv);
 
