@@ -190,9 +190,8 @@ int* MPI_KNN(ArffData* dataset, int argc, char** argv)
             MPI_Send(&mode, 1, MPI_INT, 0, i, MPI_COMM_WORLD); // predictions[i] = mode
             free(distances);
         }
+        MPI_Finalize();
     }
-
-    MPI_Finalize();
 }
 
 int* computeConfusionMatrix(int* predictions, ArffData* dataset)
