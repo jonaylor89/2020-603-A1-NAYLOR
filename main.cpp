@@ -117,6 +117,7 @@ int* MPI_KNN(ArffData* dataset, int argc, char** argv)
         }
 
         MPI_Waitall(dataset->num_instances(), reqs, stats);
+        return predictions;
     }
     else 
     {
@@ -191,7 +192,6 @@ int* MPI_KNN(ArffData* dataset, int argc, char** argv)
     }
 
     MPI_Finalize();
-    return predictions;
 }
 
 int* computeConfusionMatrix(int* predictions, ArffData* dataset)
