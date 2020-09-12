@@ -109,6 +109,8 @@ int* MPI_KNN(ArffData* dataset)
     if(rank == 0)
     {
 
+        cout << "Portion: " << portion << endl;
+
         for(int i = 0; i < dataset->num_instances(); i++)
         {
             MPI_Irecv(&predictions[i], 1, MPI_INT, MPI_ANY_SOURCE, i, MPI_COMM_WORLD, &reqs[i]);
