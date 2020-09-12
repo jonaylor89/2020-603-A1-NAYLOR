@@ -109,8 +109,6 @@ int* MPI_KNN(ArffData* dataset)
     if(rank == 0)
     {
 
-        cout << "Portion: " << dataset->num_instances() << "/" << size-1 << " = " << portion << endl;
-
         for(int i = 0; i < dataset->num_instances(); i++)
         {
             MPI_Irecv(&predictions[i], 1, MPI_INT, MPI_ANY_SOURCE, i, MPI_COMM_WORLD, &reqs[i]);
@@ -190,7 +188,6 @@ int* MPI_KNN(ArffData* dataset)
             MPI_Send(&mode, 1, MPI_INT, 0, i, MPI_COMM_WORLD); // predictions[i] = mode
             free(distances);
         }
-        cout << rank << " of " << size-1 << " with " << upperBound - lowerBound << ":" << count << endl;
     }
 
     MPI_Barrier(MPI_COMM_WORLD);
