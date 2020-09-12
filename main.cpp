@@ -109,7 +109,7 @@ int* MPI_KNN(ArffData* dataset)
     if(rank == 0)
     {
 
-        cout << "Portion: " << portion << endl;
+        cout << "Portion: " << dataset->num_instances() << "/" << size-1 << " = " << portion << endl;
 
         for(int i = 0; i < dataset->num_instances(); i++)
         {
