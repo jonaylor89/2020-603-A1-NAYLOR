@@ -121,7 +121,7 @@ int* MPI_KNN(ArffData* dataset)
         int k = 5; // number of neighbors to use for prediction
 
         int lowerBound = (rank - 1) * portion;
-        int upperBound = (rank * portion) - 1 > dataset->num_instances() ? dataset->num_instances() - 1: (rank * portion) - 1; // min()
+        int upperBound = (rank * portion) - 1 > dataset->num_instances() - 1 ? dataset->num_instances() - 1: (rank * portion) - 1; // min()
 
         int count = 0; // [DEBUG]
         for(int i = lowerBound; i <= upperBound; i++)
