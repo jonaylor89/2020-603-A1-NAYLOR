@@ -123,7 +123,6 @@ int* MPI_KNN(ArffData* dataset)
         int lowerBound = (rank - 1) * portion;
         int upperBound = (rank * portion) - 1 > dataset->num_instances() - 1 ? dataset->num_instances() - 1: (rank * portion) - 1; // min()
 
-        int count = 0; // [DEBUG]
         for(int i = lowerBound; i <= upperBound; i++)
         {
 
@@ -184,7 +183,6 @@ int* MPI_KNN(ArffData* dataset)
             }
 
 
-            count++;
             MPI_Send(&mode, 1, MPI_INT, 0, i, MPI_COMM_WORLD); // predictions[i] = mode
             free(distances);
         }
