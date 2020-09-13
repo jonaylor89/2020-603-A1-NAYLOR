@@ -15,7 +15,7 @@
 
 using namespace std;
 
-int* KNN(ArffData* dataset)
+int* KNN(ArffData* dataset, int k)
 {
     // predictions is the array where you have to return the class predicted (integer) for the dataset instances
     int* predictions = (int*)malloc(dataset->num_instances() * sizeof(int));
@@ -25,8 +25,6 @@ int* KNN(ArffData* dataset)
     // int classValue =  dataset->get_instance(instanceIndex)->get(dataset->num_attributes() - 1)->operator int32();
     
     // Implement the KNN here, fill the predictions array
-
-    int k = 3; // number of neighbors to use for prediction
 
     for(int i = 0; i < dataset->num_instances(); i++)
     {
@@ -94,7 +92,7 @@ int* KNN(ArffData* dataset)
     return predictions;
 }
 
-int* MPI_KNN(ArffData* dataset)
+int* MPI_KNN(ArffData* dataset, int k)
 {
 
     MPI_Request reqs[dataset->num_instances()];
@@ -118,8 +116,6 @@ int* MPI_KNN(ArffData* dataset)
     }
     else 
     {
-        int k = 5; // number of neighbors to use for prediction
-
         int lowerBound = (rank - 1) * portion;
         int upperBound = (rank * portion) - 1 > dataset->num_instances() - 1 ? dataset->num_instances() - 1: (rank * portion) - 1; // min()
 
@@ -221,9 +217,9 @@ float computeAccuracy(int* confusionMatrix, ArffData* dataset)
 
 int main(int argc, char *argv[])
 {
-    if(argc != 2)
+    if(argc != 3)
     {
-        cout << "Usage: ./main datasets/datasetFile.arff" << endl;
+        cout << "Usage: ./main datasets/datasetFile.arff k" << endl;
         exit(0);
     }
     
@@ -232,6 +228,9 @@ int main(int argc, char *argv[])
     int rank, size;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
+    
+    // Get k
+    int k = atoi(argv[2]);
 
     // Open the dataset
     ArffParser parser(argv[1]);
@@ -243,7 +242,7 @@ int main(int argc, char *argv[])
         clock_gettime(CLOCK_MONOTONIC_RAW, &start);
     
         // Get the class predictions
-        int* predictions = KNN(dataset);
+        int* predictions = KNN(dataset, k);
         // Compute the confusion matrix
         int* confusionMatrix = computeConfusionMatrix(predictions, dataset);
         // Calculate the accuracy
@@ -261,7 +260,7 @@ int main(int argc, char *argv[])
     clock_gettime(CLOCK_MONOTONIC_RAW, &start);
     
     // Get the class predictions
-    int* predictionsMP = MPI_KNN(dataset);
+    int* predictionsMP = MPI_KNN(dataset, k);
 
     if(rank == 0)
     {
